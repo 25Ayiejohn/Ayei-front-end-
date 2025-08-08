@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>قائمة المهام بالصوت</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      direction: rtl;
+      text-align: center;
+      background-color: #f2f2f2;
+      padding: 30px;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 60%;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button {
+      padding: 10px 15px;
+      font-size: 18px;
+      margin-right: 10px;
+      cursor: pointer;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      border-radius: 8px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin-top: 30px;
+    }
+
+    li {
+      background-color: white;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px #aaa;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📋 قائمة المهام</h1>
+  <input type="text" id="taskInput" placeholder="اكتب مهمة أو تحدث..." />
+  <button onclick="addTask()">➕ إضافة</button>
+  <button onclick="startVoiceInput()">🎤 بالصوت</button>
+
+  <ul id="taskList"></ul>
+
+  <script>
+    function addTask() {
+      const taskInput = document.getElementById("taskInput");
+      const taskText = taskInput.value.trim();
+      if (taskText === "") return;
+
+      const li = document.createElement("li");
+      li.textContent = taskText;
+      document.getElementById("taskList").appendChild(li);
+      taskInput.value = "";
+    }
+
+    function startVoiceInput() {
+      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert("المتصفح لا يدعم التعرف على الصوت");
+        return;
+      }
+
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'ar-EG';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.start();
+
+      recognition.onresult = function (event) {
+        const task = event.results[0][0].transcript;
+        document.getElementById("taskInput").value = task;
+        addTask(); // أضف المهمة مباشرة
+      };
+
+      recognition.onerror = function (event) {
+        alert("حدث خطأ: " + event.error);
+      };
+    }
+  </script>
+
+</body>
+</html>
